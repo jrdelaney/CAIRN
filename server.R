@@ -156,7 +156,6 @@ function(input, output) {
       interestSites$end <- as.integer(input$chromosome_end_input) + as.integer(input$flanking_length)
     }
     
-    #if(is.null(region_remove_list)==FALSE){removalSites <- region_remove_list} #old, erase if working
     if(input$remove_custom==TRUE){
       region_remove_list <- as.data.frame(matrix(0,nrow=1,ncol=3))
       colnames(region_remove_list) <- c("chrom", "start", "end")
@@ -200,9 +199,6 @@ function(input, output) {
     if(class(segments$chrom)=="integer"){segments$chrom <- paste0("chr",segments$chrom)}
     if(species=="human"){segments$chrom <- gsub("23","X",segments$chrom)
     segments$chrom <- gsub("24","Y",segments$chrom)
-    #chromEnds <- fread(paste0("Annotations/hg38_chromosomeEnds.bed"),stringsAsFactors = FALSE,col.names = c("chrom","start","end"))
-    #chromNames <- unique(chromEnds$chrom)
-    #centromeres <- as.data.frame(fread(paste0("Annotations/hg38_centromeres.bed"),stringsAsFactors = FALSE,col.names = c("chrom","start","end")))
     if(input$remove_centomeres == TRUE){region_remove_list <- rbind(centromeres,region_remove_list)} 
     if(sum(grepl("chr",segments$chrom))==0){segments$chrom <- paste0("chr",segments$chrom)}}
     if(species=="mouse"){segments$chrom <- gsub("20","X",segments$chrom)
@@ -384,6 +380,7 @@ function(input, output) {
         tidy_mut <- gather(data= mutations, key="gene", value="mutant",  match(samples_with_mut_data, colnames(mutations)))
         colnames(tidy_mut) <- c("gene", "sample", "mutant")
         tidy_mut <- subset(as.data.frame(tidy_mut), mutant != 0)
+        if(nrow(tidy_mut) > 0){
         tidy_mut$chrom <- interestSites$chrom[1]
         tidy_mut$start <- genelocations$start[match(tidy_mut$gene, genelocations$symbol)]
         tidy_mut$end <- genelocations$end[match(tidy_mut$gene, genelocations$symbol)]
@@ -402,12 +399,8 @@ function(input, output) {
         for (mutation in 1:nrow(tidy_mut)){
           if(tidy_mut$gene[mutation] %in% subset(tumor_genes, tsg_og == "OG")$symbol){tidy_mut$colorval[mutation] <- "green"}
         }
+        } else {tidy_mut <- NULL}
       }}
-    
-    
-    
-    
-    
     
     #generate chromosome graphic data
     interest_chromosome <- as.data.frame(subset(chromEnds, chrom== interestSites$chrom[1]))
