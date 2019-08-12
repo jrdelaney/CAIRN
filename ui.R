@@ -108,6 +108,7 @@ fluidPage(
   mainPanel(
     helpText('This visualization tool explores copy number alterations discovered in published cancer datasets.'),
     helpText('It is intended to help the oncology community observe of the relative rates of amplification, deletion, and mutation of interesting genes and regions.'),
+    helpText('TCGA data is hosted here: https://gdc.cancer.gov/about-data/publications/pancanatlas'),
     helpText('For help finding the name of your gene, please visit: https://genome.ucsc.edu/'),
     helpText('Blue segments indicate deletions, red segments indicate amplifications.  Darker shades indicate stronger magnitude of alteration.'),
     textOutput('header'),
@@ -126,5 +127,3 @@ fluidPage(
     
   )
 )
-
-
